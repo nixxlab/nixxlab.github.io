@@ -1,1 +1,60 @@
 // app global css in SCSS form
+
+@import url('https://fonts.googleapis.com/css2?family=Raleway:wght@100&display=swap');
+
+body {
+  font-family: Raleway, sans-serif;
+}
+
+h1 {
+  font-size: 48px;
+  font-weight: bold;
+  line-height: 1;
+}
+
+h2 {
+  font-size: 32px;
+  font-weight: bold;
+  line-height: 1;
+}
+
+h3 {
+  font-size: 24px;
+  font-weight: bold;
+  line-height: 1;
+}
+
+h4 {
+  font-size: 16px;
+  font-weight: bold;
+  line-height: 1;
+}
+
+h5 {
+  font-size: 14px;
+  font-weight: bold;
+  line-height: 1;
+}
+
+h6 {
+  font-size: 12px;
+  font-weight: bold;
+  line-height: 1;
+}
+
+.q-tab__indicator {
+  background-color: $secondary;
+}
+
+.q-tab__label {
+  font-weight: bold;
+}
+
+.q-toolbar__title {
+  font-weight: bold;
+
+  img {
+    height: 2rem;
+    vertical-align: middle;
+  }
+}
