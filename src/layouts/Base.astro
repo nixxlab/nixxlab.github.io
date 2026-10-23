@@ -46,7 +46,22 @@ const alt = (l: Locale) => new URL(localePath(l, path), Astro.site).href;
     <meta name="generator" content={Astro.generator} />
     <ClientRouter />
     {site.goatcounter && (
-      <script is:inline data-goatcounter={`https://${site.goatcounter}.goatcounter.com/count`} async src="//gc.zgo.at/count.js" />
+      <>
+        {/* ClientRouter navigates without page loads, so count on every astro:page-load (initial load included). */}
+        <script is:inline>
+          if (!window.__gcTracking) {
+            window.__gcTracking = true;
+            window.goatcounter = { no_onload: true };
+            const track = () => {
+              const gc = window.goatcounter;
+              if (gc && gc.count) gc.count({ path: location.pathname });
+              else document.getElementById('goatcounter')?.addEventListener('load', track, { once: true });
+            };
+            document.addEventListener('astro:page-load', track);
+          }
+        </script>
+        <script is:inline id="goatcounter" data-goatcounter={`https://${site.goatcounter}.goatcounter.com/count`} async src="//gc.zgo.at/count.js" />
+      </>
     )}
     <slot name="head" />
   </head>
@@ -74,7 +89,7 @@ const alt = (l: Locale) => new URL(localePath(l, path), Astro.site).href;
 
     <footer class="site-footer">
       <a href={localePath(locale, '/rss.xml').replace(/\/$/, '')}>RSS</a>
-      {site.telegramChannel && <a href={site.telegramChannel}>Telegram</a>}
+      {site.telegram && <a href={site.telegram}>Telegram</a>}
       {site.email && <a href={`mailto:${site.email}`}>Email</a>}
     </footer>
   </body>
