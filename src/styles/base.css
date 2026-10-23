@@ -1,0 +1,58 @@
+/*
+ * Skeleton: readability and order only. Visual identity comes from the design directions.
+ * Rule: motion respects prefers-reduced-motion.
+ */
+:root {
+  --bg: #0e0e10;
+  --fg: #e8e6e1;
+  --muted: #8d8a83;
+  --accent: #e0a458;
+  --measure: 68ch;
+  color-scheme: dark;
+  font-family: system-ui, -apple-system, 'Segoe UI', 'PingFang SC', 'Noto Sans CJK SC', sans-serif;
+  line-height: 1.6;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+  color: var(--fg);
+}
+
+a { color: inherit; text-decoration-color: var(--accent); text-underline-offset: 0.2em; }
+a:hover { color: var(--accent); }
+
+.art { position: fixed; inset: 0; z-index: -1; pointer-events: none; }
+
+.site-header, .site-footer, main {
+  width: min(100% - 2rem, var(--measure));
+  margin-inline: auto;
+}
+
+.site-header { display: flex; flex-wrap: wrap; gap: 1rem 1.5rem; align-items: baseline; padding-block: 1.5rem; }
+.site-header nav { display: flex; gap: 1rem; }
+.site-header .langs { margin-inline-start: auto; }
+.logo { font-weight: 700; letter-spacing: 0.05em; text-decoration: none; }
+[aria-current='true'] { color: var(--accent); }
+
+main { flex: 1; padding-block: 2rem 4rem; }
+.site-footer { display: flex; gap: 1.5rem; padding-block: 2rem; color: var(--muted); }
+
+.muted { color: var(--muted); }
+.tags { display: flex; flex-wrap: wrap; gap: 0.5rem 1rem; padding: 0; list-style: none; }
+.feed { padding: 0; list-style: none; display: grid; gap: 2rem; }
+.feed h2 { margin-block: 0 0.25rem; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

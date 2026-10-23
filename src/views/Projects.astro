@@ -1,0 +1,22 @@
+---
+import Base from '../layouts/Base.astro';
+import { localePath, t, type Locale, type UiKey } from '../i18n/ui';
+import { getProjects, slugOf } from '../lib/content';
+
+interface Props { locale: Locale }
+const { locale } = Astro.props;
+const projects = await getProjects(locale);
+---
+
+<Base locale={locale} path="/projects/" title={t(locale, 'projects.title')}>
+  <h1>{t(locale, 'projects.title')}</h1>
+  <ul class="feed">
+    {projects.map((p) => (
+      <li>
+        <h2><a href={localePath(locale, `/projects/${slugOf(p)}/`)} transition:name={`project-${slugOf(p)}`}>{p.data.title}</a></h2>
+        <p class="muted">{t(locale, `project.status.${p.data.status}` as UiKey)}</p>
+        <p>{p.data.description}</p>
+      </li>
+    ))}
+  </ul>
+</Base>

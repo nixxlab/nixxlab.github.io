@@ -1,0 +1,6 @@
+---
+import Feed from '../../views/Feed.astro';
+import { localePaths, prefixed } from '../../lib/paths';
+export const getStaticPaths = () => localePaths(prefixed);
+---
+<Feed locale={Astro.props.locale} />

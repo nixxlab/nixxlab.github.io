@@ -1,0 +1,6 @@
+---
+import Post from '../../views/Post.astro';
+import { postPaths } from '../../lib/paths';
+export const getStaticPaths = () => postPaths(['ru']);
+---
+<Post {...Astro.props} />

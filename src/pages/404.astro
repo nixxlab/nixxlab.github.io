@@ -1,0 +1,11 @@
+---
+import Base from '../layouts/Base.astro';
+import { localePath, splitLocale, t } from '../i18n/ui';
+// GitHub Pages serves a single 404.html for all languages; it is built as ru.
+const locale = splitLocale(Astro.url.pathname)[0];
+---
+<Base locale={locale} path="/404/" title={t(locale, 'notFound.title')}>
+  <h1>404</h1>
+  <p>{t(locale, 'notFound.title')}</p>
+  <p><a href={localePath(locale, '/')}>{t(locale, 'notFound.home')}</a></p>
+</Base>

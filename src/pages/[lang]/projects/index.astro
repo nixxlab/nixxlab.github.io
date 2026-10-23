@@ -1,0 +1,6 @@
+---
+import Projects from '../../../views/Projects.astro';
+import { localePaths, prefixed } from '../../../lib/paths';
+export const getStaticPaths = () => localePaths(prefixed);
+---
+<Projects locale={Astro.props.locale} />

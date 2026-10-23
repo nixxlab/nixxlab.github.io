@@ -1,0 +1,26 @@
+---
+import { formatDate, localePath, t, type Locale } from '../i18n/ui';
+import { tagLabel } from '../i18n/tags';
+import { slugOf, type Post } from '../lib/content';
+
+interface Props { locale: Locale; posts: Post[] }
+const { locale, posts } = Astro.props;
+---
+
+{posts.length === 0 ? (
+  <p class="muted">{t(locale, 'feed.empty')}</p>
+) : (
+  <ul class="feed">
+    {posts.map((post) => (
+      <li>
+        <article>
+          <h2><a href={localePath(locale, `/blog/${slugOf(post)}/`)} transition:name={`post-${slugOf(post)}`}>{post.data.title}</a></h2>
+          <p class="muted"><time datetime={post.data.date.toISOString()}>{formatDate(locale, post.data.date)}</time>
+            {post.data.tags.length > 0 && <> · {post.data.tags.map((tag) => tagLabel(tag, locale)).join(', ')}</>}
+          </p>
+          <p>{post.data.description}</p>
+        </article>
+      </li>
+    ))}
+  </ul>
+)}

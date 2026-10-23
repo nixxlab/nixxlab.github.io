@@ -1,0 +1,6 @@
+---
+import Post from '../../../views/Post.astro';
+import { postPaths, prefixed } from '../../../lib/paths';
+export const getStaticPaths = () => postPaths(prefixed);
+---
+<Post {...Astro.props} />

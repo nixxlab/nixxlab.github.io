@@ -1,0 +1,81 @@
+---
+/**
+ * Skeleton of every page: semantic HTML, meta, hreflang, navigation.
+ * The art layer is `<slot name="art" />`: decorative, `aria-hidden`, kept across navigations (transition:persist).
+ */
+import { ClientRouter } from 'astro:transitions';
+import { locales, htmlLang, ogLocale, localeLabel, localePath, t, type Locale } from '../i18n/ui';
+import { site } from '../site';
+import '../styles/base.css';
+
+interface Props {
+  locale: Locale;
+  /** Page path without the language prefix, e.g. "/blog/my-post/". */
+  path: string;
+  title?: string;
+  description?: string;
+  /** Languages the page exists in; by site rule, all three. */
+  available?: readonly Locale[];
+}
+
+const { locale, path, title, description = t(locale, 'site.description'), available = locales } = Astro.props;
+const fullTitle = title ? `${title} — ${site.name}` : site.name;
+const canonical = new URL(localePath(locale, path), Astro.site);
+const alt = (l: Locale) => new URL(localePath(l, path), Astro.site).href;
+---
+
+<!doctype html>
+<html lang={htmlLang[locale]}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <meta name="author" content={site.author[locale]} />
+    <link rel="canonical" href={canonical.href} />
+    {available.map((l) => <link rel="alternate" hreflang={htmlLang[l]} href={alt(l)} />)}
+    <link rel="alternate" hreflang="x-default" href={alt('ru')} />
+    <link rel="alternate" type="application/rss+xml" title={`${site.name} (${localeLabel[locale]})`} href={new URL(localePath(locale, '/rss.xml').replace(/\/$/, ''), Astro.site)} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={site.name} />
+    <meta property="og:title" content={title ?? site.name} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical.href} />
+    <meta property="og:locale" content={ogLocale[locale]} />
+    <meta name="generator" content={Astro.generator} />
+    <ClientRouter />
+    {site.goatcounter && (
+      <script is:inline data-goatcounter={`https://${site.goatcounter}.goatcounter.com/count`} async src="//gc.zgo.at/count.js" />
+    )}
+    <slot name="head" />
+  </head>
+  <body>
+    <div class="art" aria-hidden="true" transition:persist="art"><slot name="art" /></div>
+
+    <header class="site-header">
+      <a class="logo" href={localePath(locale, '/')}>nixxlab</a>
+      <nav aria-label="main">
+        <a href={localePath(locale, '/')}>{t(locale, 'nav.home')}</a>
+        <a href={localePath(locale, '/projects/')}>{t(locale, 'nav.projects')}</a>
+      </nav>
+      <nav class="langs" aria-label="language">
+        {available.map((l) => (
+          <a href={localePath(l, path)} hreflang={htmlLang[l]} lang={htmlLang[l]} aria-current={l === locale ? 'true' : undefined}>
+            {localeLabel[l]}
+          </a>
+        ))}
+      </nav>
+    </header>
+
+    <main transition:animate="fade">
+      <slot />
+    </main>
+
+    <footer class="site-footer">
+      <a href={localePath(locale, '/rss.xml').replace(/\/$/, '')}>RSS</a>
+      {site.telegramChannel && <a href={site.telegramChannel}>Telegram</a>}
+      {site.email && <a href={`mailto:${site.email}`}>Email</a>}
+    </footer>
+  </body>
+</html>

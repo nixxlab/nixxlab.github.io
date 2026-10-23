@@ -1,0 +1,6 @@
+---
+import Tag from '../../../views/Tag.astro';
+import { tagPaths, prefixed } from '../../../lib/paths';
+export const getStaticPaths = () => tagPaths(prefixed);
+---
+<Tag {...Astro.props} />
