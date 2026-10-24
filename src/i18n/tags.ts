@@ -5,7 +5,10 @@ import type { Locale } from './ui';
  * Add a topic here with labels in all three languages before using it in a post;
  * the post schema accepts only keys listed here.
  */
-export const tags: Record<string, Record<Locale, string>> = {};
+export const tags: Record<string, Record<Locale, string>> = {
+  'programming-languages': { ru: 'языки программирования', en: 'programming languages', zh: '编程语言' },
+  tools: { ru: 'инструменты', en: 'tools', zh: '工具' },
+};
 
 export type Tag = string;
 export const isTag = (key: string) => Object.hasOwn(tags, key);

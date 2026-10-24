@@ -1,0 +1,114 @@
+---
+/**
+ * The triangle of the post "Depth, speed, beauty — in search of the philosopher's stone".
+ * Decorative (aria-hidden): the post's text names the three corners itself.
+ * Echoes the alchemical sign of the philosopher's stone (circle, triangle, square) with the
+ * eight-pointed star of Alatyr from the site's seal at its heart. Light runs along all three
+ * edges at once: no corner is sacrificed. Motion stops under prefers-reduced-motion (base.css).
+ */
+interface Props {
+  /** Corner labels in the page's language: [top, bottom left, bottom right]. */
+  labels: [string, string, string];
+}
+const { labels } = Astro.props;
+const [top, left, right] = labels;
+
+// Triangle inscribed in a circle of radius 100, point up.
+const R = 100;
+const corners = [-90, 150, 30].map((deg) => {
+  const a = (deg * Math.PI) / 180;
+  return [R * Math.cos(a), R * Math.sin(a)] as const;
+});
+const tri = `M ${corners.map(([x, y]) => `${x.toFixed(2)} ${y.toFixed(2)}`).join(' L ')} Z`;
+// The star of Alatyr: two squares, one turned by 45°.
+const square = (r: number, rot: number) =>
+  `M ${[0, 1, 2, 3]
+    .map((i) => {
+      const a = rot + (i * Math.PI) / 2;
+      return `${(r * Math.cos(a)).toFixed(2)} ${(r * Math.sin(a)).toFixed(2)}`;
+    })
+    .join(' L ')} Z`;
+---
+
+<figure class="stone-triangle" aria-hidden="true">
+  <svg viewBox="-135 -128 270 218" role="presentation">
+    <defs>
+      <filter id="stone-glow" x="-50%" y="-50%" width="200%" height="200%">
+        <feGaussianBlur stdDeviation="3" result="b" />
+        <feMerge><feMergeNode in="b" /><feMergeNode in="SourceGraphic" /></feMerge>
+      </filter>
+      <radialGradient id="stone-core">
+        <stop offset="0" stop-color="#fff6e0" stop-opacity="0.55" />
+        <stop offset="0.45" stop-color="#d9ac5c" stop-opacity="0.18" />
+        <stop offset="1" stop-color="#6e5abe" stop-opacity="0" />
+      </radialGradient>
+    </defs>
+
+    <circle class="ring" r={R} />
+    <circle class="ticks" r={R + 7} />
+
+    <path class="edge" d={tri} />
+    <path class="comet" d={tri} pathLength="300" filter="url(#stone-glow)" />
+
+    <circle class="halo" r="48" fill="url(#stone-core)" />
+    <circle class="inner" r={R / 2} />
+    <g class="star">
+      <path d={square(34, -Math.PI / 2)} />
+      <path d={square(34, -Math.PI / 4)} />
+      <circle r="9" />
+    </g>
+
+    {corners.map(([x, y], i) => (
+      <circle class={`node n${i}`} cx={x} cy={y} r="4.2" filter="url(#stone-glow)" />
+    ))}
+
+    <text x="0" y="-112" text-anchor="middle">{top}</text>
+    <text x={corners[1][0]} y={corners[1][1] + 26} text-anchor="middle">{left}</text>
+    <text x={corners[2][0]} y={corners[2][1] + 26} text-anchor="middle">{right}</text>
+  </svg>
+</figure>
+
+<style>
+  .stone-triangle {
+    margin: 2.5rem auto;
+    width: min(100%, 24rem);
+    animation: float 16s ease-in-out infinite;
+  }
+  svg { display: block; width: 100%; height: auto; overflow: visible; }
+
+  .ring, .ticks, .edge, .inner, .star path, .star circle { fill: none; }
+  .ring { stroke: rgba(217, 172, 92, 0.35); stroke-width: 0.8; }
+  .ticks {
+    stroke: rgba(217, 172, 92, 0.3); stroke-width: 3; stroke-dasharray: 0.6 7.2;
+    transform-box: fill-box; transform-origin: center;
+    animation: turn 120s linear infinite;
+  }
+  .edge { stroke: rgba(217, 172, 92, 0.55); stroke-width: 1.1; stroke-linejoin: round; }
+  /* pathLength 300: each edge is 100, so one comet runs along every edge at the same time. */
+  .comet {
+    fill: none; stroke: #fff2d2; stroke-width: 1.8; stroke-linecap: round;
+    stroke-dasharray: 16 84; animation: run 7s linear infinite;
+  }
+  .inner { stroke: rgba(217, 172, 92, 0.3); stroke-width: 0.7; }
+  .halo { animation: glowing 8s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+  .star {
+    stroke: rgba(217, 172, 92, 0.75); stroke-width: 0.9;
+    transform-box: fill-box; transform-origin: center;
+    animation: turn 90s linear infinite reverse;
+  }
+  .star path, .star circle { stroke: inherit; }
+  .node { fill: #f6dfa8; animation: pulse 6s ease-in-out infinite; }
+  .n1 { animation-delay: -2s; }
+  .n2 { animation-delay: -4s; }
+
+  text {
+    fill: #d9ac5c; font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase;
+    font-family: 'Cormorant Garamond', 'Songti SC', 'Noto Serif CJK SC', serif;
+  }
+
+  @keyframes run { to { stroke-dashoffset: -100; } }
+  @keyframes turn { to { rotate: 360deg; } }
+  @keyframes pulse { 0%, 100% { opacity: 0.55; } 50% { opacity: 1; } }
+  @keyframes glowing { 0%, 100% { opacity: 0.6; scale: 0.9; } 50% { opacity: 1; scale: 1.15; } }
+  @keyframes float { 0%, 100% { translate: 0 0; } 50% { translate: 0 -8px; } }
+</style>

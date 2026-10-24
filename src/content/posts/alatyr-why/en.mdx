@@ -1,0 +1,109 @@
+---
+sourceHash: 423426e2e755
+title: "Depth, Speed, Beauty: In Search of the Philosopher's Stone"
+subtitle: "Why I need yet another programming language"
+description: Why I need yet another programming language, and why it shouldn't make you pick two out of three.
+date: 2026-10-24
+tags: [programming-languages, tools]
+project: alatyr
+---
+
+import StoneTriangle from '../../../components/art/StoneTriangle.astro';
+
+
+Every new project starts for me with the same question: what do I write it in? And every time the answer turns out to be a compromise.
+
+If I need a real-time system, where every operation has its own budget, where the garbage collector has no right to "stop the world" at the wrong moment, and where I, not the runtime, am in charge of time and resources, I take a language that has every lever but is slow and painful to write. If I need to quickly build something large and alive, I take a language with convenient abstractions and pay for the convenience by no longer understanding what the machine is actually doing. If I need it to run fast, I look for a middle ground and once again give something up. And in a large project all of this often gets glued together from several languages at once, and the seams between them become a job of their own.
+
+In essence, choosing a stack is not choosing a language. It is choosing which of three corners to sacrifice.
+
+## The triangle of choice
+
+<StoneTriangle labels={["beauty", "depth", "speed"]} />
+
+**Depth.** How much of the machine I can reach. Can I get to any technical point of the hardware, down to a single bit or a specific processor instruction, without leaving the language?
+
+**Speed.** How efficient the program is on the machine itself. What each line costs in cycles and bytes, and whether there is a price I never asked to pay.
+
+**Beauty.** How pleasant and convenient the language is to think and write in: strong abstractions, familiar syntax, code you want to read again.
+
+The familiar rule "pick two out of three" works here almost without fail. Depth and speed, but then no beauty. Beauty, but then no depth, and often no speed either.
+
+Alatyr is my attempt not to choose. To turn all three corners up to the maximum and sacrifice none of them. So that when I start a project I don't have to wonder whether the language has enough levers, and don't abandon it halfway because it's inconvenient. By design, it covers everything from bootloaders and real-time systems to the web and games.
+
+It sounds like a search for the philosopher's stone.\
+That's exactly what it is.
+
+## Depth: down to the bit and the cycle
+
+Alatyr's ceiling of expressiveness is assembly. Anything that can be said at the level of the machine can be said in Alatyr.
+
+Assembly here is not a quoted insert from a foreign language but part of the language itself: typed instructions, labels, jumps. The types themselves are built on a model of the machine: at the bottom lie raw blocks of bits, and signed integers, unsigned integers and floating-point numbers are just ways of reading those bits.
+
+But depth is not only about bits. It is also about time and resources. Alatyr has no garbage collector, which means no pauses where the program freezes while the runtime tidies up memory. Every allocation is explicit and goes through an allocator named in the code: an arena, a region, one of your own. Freeing is explicit too, through `defer`, with no destructors firing somewhere off-screen. For a real-time system this is what matters most: nothing happens in the program that I didn't write myself or that isn't documented in the language specification.
+
+And there is no ladder of "levels" where working with hardware means descending into a separate, cut-down dialect. There is one language. If a module needs strict guarantees (no allocations, no abstractions, no standard library), it declares those restrictions, and the compiler checks them. "Assembly only" is not a different language, just one of those restrictions.
+
+## Speed: no hidden costs
+
+Alatyr is compiled ahead of time, straight to machine code, through the platform's own assembler. No runtime lives alongside the program, and inside the program there are no hidden copies, no implicit calls, and no dispatch that isn't written in the code.
+
+I am deliberately not giving any numbers here. The project does have benchmarks, but a number you can't reproduce on your own machine is advertising, not measurement. The numbers will come when they can be honestly checked. For now, the speed rests on the design: there is nothing in the program that you pay for without knowing it.
+
+## Beauty: strong abstractions, familiar syntax
+
+I wanted a language whose ceiling is assembly to read like a modern high-level language. The main move is a single declaration form for everything: name, type, value.
+
+```
+Point := struct { x : u64, y : u64 }
+add   := fn(a : u64, b : u64) -> u64 { a + b }
+Vec   := fn(T : type) -> type { struct { ptr : ptr(T), len : usize } }
+mut count : u64 = 0
+```
+
+A struct, a function and a generic type are all declared the same way. The generic type `Vec` is just a function that runs at compile time and returns a type. There is no separate template mechanism; there is one idea, carried all the way through.
+
+The same thinking applies to project configuration. A package manifest is written not in a separate configuration language but in Alatyr itself: build targets, architectures, restrictions are all ordinary values that the compiler evaluates.
+
+## Why the corners don't drag each other down
+
+The corners of the triangle usually conflict for a reason. An abstraction is convenient because it hides details, and the hidden part is exactly where unpredictable costs live. Depth is inconvenient because you have to say everything explicitly.
+
+Alatyr rests on one principle: **the programmer always knows what the machine is doing.** Every language construct turns into machine code according to rules laid out in the specification, so the result can be predicted without running the compiler. An abstraction costs no more than the code it replaces.
+
+That is what ties the corners together. Since abstraction is transparent, beauty doesn't take away speed. Since you can descend to the bit from anywhere, convenience doesn't shut off depth. Beauty doesn't hide the cost; it only spares you from writing it out by hand.
+
+The same principle leads to what is perhaps the strictest rule of the language: it has no undefined behavior. An operation either executes correctly or deterministically stops the program with a clear error. If you need raw speed without checks, you turn it on explicitly, for a specific section of code:
+
+```
+unchecked {
+  while j * j <= n {
+    if n % j == 0 { return false }
+    j += 1
+  }
+}
+```
+
+Inside `unchecked`, behavior is defined by the hardware (overflow follows the processor's rules), but never by "whatever suits the compiler." And the compiler is not allowed to turn this mode on by itself.
+
+## Where the neighbors stand
+
+I don't see existing languages as failed attempts, but as different sets of priorities.
+
+C and assembly chose depth and speed. They are honest languages: they give you everything. But the price of undefined behavior in C is that the optimizer is entitled to break code that looks correct.
+
+Languages with a garbage collector and a runtime chose beauty and speed of development. They are wonderful for their range of tasks, and they pay with depth: you can't reach the machine from them, and the pauses and the cost of abstractions are unpredictable.
+
+Closest to Alatyr are Rust and Zig, and I learn a lot from both. Rust made memory safety mandatory through borrow checking; I choose a simpler model: explicit freeing through `defer`, arenas, regions. Zig is close to me in its explicitness and compile-time evaluation; I want to take one more step, so that there is no undefined behavior at all and assembly is part of the language rather than an insert.
+
+## Why Alatyr
+
+In Slavic folklore, Alatyr is "the father of all stones," the unmoving stone at the center of the world from which everything is measured. For a language built on a machine that is never hidden, I find it hard to imagine a more fitting name. In Alatyr, the point of reference is the machine.
+
+## Where the project stands
+
+To be honest about the status: the Alatyr compiler is written in Alatyr itself and builds itself, reproducibly down to the byte: every build produces the very same binary. This works on x86_64 Linux, without the C standard library. The language specification is written in full, but is still a draft under review. The compiler is a preview release.
+
+Backends for aarch64, riscv64 and WebAssembly already exist, but so far they handle only a subset of the language. The web via WebAssembly is a direction, not a finished capability. The principle "correct or a clear error" is a goal the project is working toward, and the deviations found so far are recorded as bugs to be fixed.
+
+The alchemists never did find the philosopher's stone. But along the way they discovered chemistry. I'm ready for either outcome…
