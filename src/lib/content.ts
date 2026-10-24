@@ -28,6 +28,12 @@ export async function getProjects(locale: Locale): Promise<Project[]> {
   return all.sort((a, b) => a.data.order - b.data.order);
 }
 
+/** The title of a project in a language (the post's `project` field holds its Latin id). */
+export async function projectTitle(id: string, locale: Locale): Promise<string> {
+  const [project] = await getCollection('projects', (p) => p.id === `${id}/${locale}`);
+  return project?.data.title ?? id;
+}
+
 /** Topics that have at least one post in the language. */
 export async function getUsedTags(locale: Locale): Promise<Tag[]> {
   const posts = await getPosts(locale);

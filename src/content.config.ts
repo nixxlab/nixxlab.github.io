@@ -16,6 +16,8 @@ const posts = defineCollection({
   loader: glob({ base: './src/content/posts', pattern: '*/{ru,en,zh}.{md,mdx}' }),
   schema: z.object({
     title: z.string(),
+    /** A line under the title, part of the title rather than of the text. */
+    subtitle: z.string().optional(),
     description: z.string(),
     date: z.coerce.date(),
     updated: z.coerce.date().optional(),

@@ -1,11 +1,26 @@
 ---
 # Sample post. `draft: true`: shown only in `pnpm dev`, never published, needs no translations.
 # A new post is a folder src/content/posts/<slug>/ with ru.mdx, en.mdx, zh.mdx; the slug is Latin.
+# Typography rules: AGENTS.md, "Post typography" (artspace ADR 0012). The body below shows each element.
 title: Образец записи
+subtitle: Необязательная строка под заголовком — часть заголовка, не текста.
 description: Одна-две фразы о записи — для ленты, поисковиков и превью ссылок.
 date: 2026-10-23
 project: termide
 draft: true
 ---
 
-Текст записи в MDX: Markdown плюс компоненты для арт-вставок.
+Текст записи в MDX: Markdown плюс компоненты для арт-вставок. Каждый абзац начинается с буквицы, текст выровнен по ширине, переносы расставляются по языку страницы.
+
+Короткая мысль не остаётся одной строкой под буквицей.\
+Её разбивают на две строки жёстким переносом.
+
+## Заголовок раздела стоит по центру
+
+Код внутри текста, например `defer`, набран золотом в размер букв. Блок кода — так же:
+
+```
+name := fn(a : u64) -> u64 { a }
+```
+
+Запись заканчивается последним абзацем, без линии и постскриптума.

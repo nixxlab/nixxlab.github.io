@@ -22,8 +22,20 @@ Accepted by the author (artspace ADR 0011); change it only on his request.
 - **Sky** (`src/art/cosmos.ts`, mounted by `src/components/Cosmos.astro` in the art layer): stars and nebulae; the flower-of-life lattice with octagrams at some nodes; a vortex of living glyphs (runes, katakana, logic marks) flowing into the seal; the seal — seed of life inside the eight-pointed star of Alatyr, glyphs at its points and around it. Palette: night `#05060b`, gold `#d9ac5c`, a little violet.
 - **Type**: Cormorant Garamond (Fontsource, Cyrillic included), light headings; the page's body face is preloaded in `Base.astro`.
 - **Layout** on the axis: centred masthead (logo, tagline = site description, menu, languages). A page whose section the menu already names hides its `h1` visually (`.visually-hidden`), never removes it.
-- **Reading over the sky**: text sits on edgeless dark clouds that breathe (`breathe`: 100–130 % size, 0.8–1 opacity, 8 s) — one oval per feed card, one cloud per article (title included). Post and project bodies are wrapped in `.prose`.
+- **Reading over the sky**: text sits on edgeless dark clouds that breathe (`breathe`: +50px on every side, i.e. +100px in width and height, never a percentage — a scaled long article would cover the masthead; 0.8–1 opacity, 8 s) — one oval per feed card, one cloud per article (title included). Post and project bodies are wrapped in `.prose`.
 - **Motion**: headings sway, feed cards bob, the active menu item shimmers in gold; pages change by lifting into blur and rising out of it (`::view-transition-*(page)` in `src/styles/base.css`).
+
+## Post typography
+
+Accepted by the author (artspace ADR 0012) as the template for every post; all of it lives in `.prose` rules in `src/styles/base.css`, so a post adds none of its own. Example: `src/content/posts/template/ru.mdx`.
+
+- **Title**: smaller than other page titles (a post title is a sentence), wider than the text column, balanced lines. **Subtitle**: the `subtitle` field, italic under the title — never the first line of the body.
+- **Paragraphs**: justified, hyphenated by the page's language, each with a two-line gold drop cap; none in Chinese.
+- **No one-line paragraph** under a drop cap (the cap hangs below it): break it into two lines with a trailing `\`, join it to a neighbour, or drop it.
+- **Section headings**: centred on the axis.
+- **Code**: site gold, 0.8em; blocks on a tinted night background with a thin gold border, 1ch padding, long lines wrapping with a 2ch hanging indent.
+- **Art**: a decorative component in `src/components/art/`, `aria-hidden`.
+- **Ending**: no rule and no postscript; a question for readers belongs in the announcement.
 
 ## Languages
 

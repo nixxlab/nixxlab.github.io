@@ -3,23 +3,23 @@ import { render } from 'astro:content';
 import Base from '../layouts/Base.astro';
 import { formatDate, localePath, t, type Locale } from '../i18n/ui';
 import { tagLabel } from '../i18n/tags';
-import { slugOf, type Post } from '../lib/content';
+import { projectTitle, slugOf, type Post } from '../lib/content';
 
 interface Props { locale: Locale; post: Post }
 const { locale, post } = Astro.props;
 const { Content } = await render(post);
 const slug = slugOf(post);
-const { title, description, date, tags, project, discussion } = post.data;
+const { title, subtitle, description, date, tags, project, discussion } = post.data;
+const projectName = project && (await projectTitle(project, locale));
 ---
 
 <Base locale={locale} path={`/blog/${slug}/`} title={title} description={description}>
   <article>
     <header>
       <h1 transition:name={`post-${slug}`}>{title}</h1>
-      <p class="muted">
-        <time datetime={date.toISOString()}>{formatDate(locale, date)}</time>
-        {project && <> · {t(locale, 'post.project')}: <a href={localePath(locale, `/projects/${project}/`)}>{project}</a></>}
-      </p>
+      {subtitle && <p class="subtitle">{subtitle}</p>}
+      {project && <p class="muted post-project">{t(locale, 'post.project')}: <a href={localePath(locale, `/projects/${project}/`)}>{projectName}</a></p>}
+      <p class="muted post-date"><time datetime={date.toISOString()}>{formatDate(locale, date)}</time></p>
       {tags.length > 0 && (
         <ul class="tags">
           {tags.map((tag) => <li><a href={localePath(locale, `/tags/${tag}/`)}>#{tagLabel(tag, locale)}</a></li>)}

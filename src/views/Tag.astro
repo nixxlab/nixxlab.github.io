@@ -13,6 +13,6 @@ const label = tagLabel(tag, locale);
 
 <Base locale={locale} path={`/tags/${tag}/`} title={label}>
   <p class="muted">{t(locale, 'tag.title')}</p>
-  <h1>#{label}</h1>
+  <h1 class="tag-title">#{label}</h1>
   <PostList locale={locale} posts={posts} />
 </Base>
