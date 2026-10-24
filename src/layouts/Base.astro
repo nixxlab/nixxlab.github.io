@@ -1,11 +1,19 @@
 ---
 /**
  * Skeleton of every page: semantic HTML, meta, hreflang, navigation.
- * The art layer is `<slot name="art" />`: decorative, `aria-hidden`, kept across navigations (transition:persist).
+ * The art layer holds the animated sky (Cosmos) and `<slot name="art" />` for a page's own art:
+ * decorative, `aria-hidden`, kept across navigations (transition:persist).
  */
 import { ClientRouter } from 'astro:transitions';
 import { locales, htmlLang, ogLocale, localeLabel, localePath, t, type Locale } from '../i18n/ui';
 import { site } from '../site';
+import Cosmos from '../components/Cosmos.astro';
+import '@fontsource/cormorant-garamond/300.css';
+import '@fontsource/cormorant-garamond/400.css';
+import '@fontsource/cormorant-garamond/400-italic.css';
+import '@fontsource/cormorant-garamond/600.css';
+import cyrillic400 from '@fontsource/cormorant-garamond/files/cormorant-garamond-cyrillic-400-normal.woff2?url';
+import latin400 from '@fontsource/cormorant-garamond/files/cormorant-garamond-latin-400-normal.woff2?url';
 import '../styles/base.css';
 
 interface Props {
@@ -22,6 +30,11 @@ const { locale, path, title, description = t(locale, 'site.description'), availa
 const fullTitle = title ? `${title} — ${site.name}` : site.name;
 const canonical = new URL(localePath(locale, path), Astro.site);
 const alt = (l: Locale) => new URL(localePath(l, path), Astro.site).href;
+// Active main-menu item: "page" on the section's own page, "true" inside the section (a post, a tag).
+const section = path.startsWith('/projects/') ? '/projects/' : '/';
+const current = (href: string) => (section !== href ? undefined : path === href ? 'page' : 'true');
+// The body face of the page's script, fetched early so the text does not reflow when it arrives.
+const bodyFont = locale === 'ru' ? cyrillic400 : latin400;
 ---
 
 <!doctype html>
@@ -37,6 +50,7 @@ const alt = (l: Locale) => new URL(localePath(l, path), Astro.site).href;
     <link rel="alternate" hreflang="x-default" href={alt('ru')} />
     <link rel="alternate" type="application/rss+xml" title={`${site.name} (${localeLabel[locale]})`} href={new URL(localePath(locale, '/rss.xml').replace(/\/$/, ''), Astro.site)} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="preload" as="font" type="font/woff2" href={bodyFont} crossorigin />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content={site.name} />
     <meta property="og:title" content={title ?? site.name} />
@@ -66,13 +80,14 @@ const alt = (l: Locale) => new URL(localePath(l, path), Astro.site).href;
     <slot name="head" />
   </head>
   <body>
-    <div class="art" aria-hidden="true" transition:persist="art"><slot name="art" /></div>
+    <div class="art" aria-hidden="true" transition:persist="art"><Cosmos /><slot name="art" /></div>
 
     <header class="site-header">
       <a class="logo" href={localePath(locale, '/')}>nixxlab</a>
+      <p class="tagline">{t(locale, 'site.description')}</p>
       <nav aria-label="main">
-        <a href={localePath(locale, '/')}>{t(locale, 'nav.home')}</a>
-        <a href={localePath(locale, '/projects/')}>{t(locale, 'nav.projects')}</a>
+        <a href={localePath(locale, '/')} aria-current={current('/')}>{t(locale, 'nav.home')}</a>
+        <a href={localePath(locale, '/projects/')} aria-current={current('/projects/')}>{t(locale, 'nav.projects')}</a>
       </nav>
       <nav class="langs" aria-label="language">
         {available.map((l) => (
@@ -83,7 +98,8 @@ const alt = (l: Locale) => new URL(localePath(l, path), Astro.site).href;
       </nav>
     </header>
 
-    <main transition:animate="fade">
+    {/* The page transition itself is in base.css (::view-transition-*(page)). */}
+    <main transition:name="page">
       <slot />
     </main>
 

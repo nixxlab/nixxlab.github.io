@@ -9,7 +9,8 @@ const projects = await getProjects(locale);
 ---
 
 <Base locale={locale} path="/projects/" title={t(locale, 'projects.title')}>
-  <h1>{t(locale, 'projects.title')}</h1>
+  {/* The active menu item already names the section; the heading stays for screen readers and search. */}
+  <h1 class="visually-hidden">{t(locale, 'projects.title')}</h1>
   <ul class="feed">
     {projects.map((p) => (
       <li>

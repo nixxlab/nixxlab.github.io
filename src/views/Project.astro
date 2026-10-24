@@ -17,7 +17,7 @@ const { title, description, status, links } = project.data;
   <article>
     <h1 transition:name={`project-${id}`}>{title}</h1>
     <p class="muted">{t(locale, `project.status.${status}` as UiKey)}</p>
-    <Content />
+    <div class="prose"><Content /></div>
     {links.length > 0 && (
       <>
         <h2>{t(locale, 'project.links')}</h2>

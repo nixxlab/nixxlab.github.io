@@ -10,7 +10,7 @@ export const localeLabel: Record<Locale, string> = { ru: 'Рус', en: 'Eng', zh
 export const ui = {
   ru: {
     'site.description': 'Лаборатория Николая Низовцева',
-    'nav.home': 'Записи',
+    'nav.home': 'Блог',
     'nav.projects': 'Проекты',
     'feed.empty': 'Первые записи скоро появятся.',
     'post.discuss': 'Обсудить в Telegram',
@@ -28,7 +28,7 @@ export const ui = {
   },
   en: {
     'site.description': "Nick's lab",
-    'nav.home': 'Writing',
+    'nav.home': 'Blog',
     'nav.projects': 'Projects',
     'feed.empty': 'The first pieces are on their way.',
     'post.discuss': 'Discuss on Telegram',
@@ -46,7 +46,7 @@ export const ui = {
   },
   zh: {
     'site.description': '尼可工坊',
-    'nav.home': '文章',
+    'nav.home': '博客',
     'nav.projects': '项目',
     'feed.empty': '第一批文章即将发布。',
     'post.discuss': '在 Telegram 讨论',

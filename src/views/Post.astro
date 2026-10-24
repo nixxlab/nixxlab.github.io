@@ -26,7 +26,7 @@ const { title, description, date, tags, project, discussion } = post.data;
         </ul>
       )}
     </header>
-    <Content />
+    <div class="prose"><Content /></div>
     {discussion && <p><a href={discussion}>{t(locale, 'post.discuss')}</a></p>}
   </article>
 </Base>

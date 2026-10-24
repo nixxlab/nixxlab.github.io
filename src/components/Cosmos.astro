@@ -1,0 +1,23 @@
+---
+/**
+ * The animated sky (src/art/cosmos.ts) on one canvas. Placed in the persistent, aria-hidden art layer of Base.
+ */
+---
+
+<canvas id="cosmos"></canvas>
+
+<style>
+  canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+</style>
+
+<script>
+  import { startCosmos } from '../art/cosmos';
+
+  // The canvas survives navigations (transition:persist); startCosmos ignores repeated calls.
+  const start = () => {
+    const canvas = document.getElementById('cosmos');
+    if (canvas instanceof HTMLCanvasElement) startCosmos(canvas);
+  };
+  start();
+  document.addEventListener('astro:page-load', start);
+</script>

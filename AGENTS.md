@@ -15,6 +15,16 @@ Everything in this repository that is not site content is English: commit messag
 - **Performance**: a page is readable within ~2 s on mobile; heavy art loads after the text (`client:idle` / `client:visible`, lazy imports).
 - Page scripts survive client-side navigation (`<ClientRouter />`): initialise on `astro:page-load`, not on document load.
 
+## Visual identity: cosmos and seal
+
+Accepted by the author (artspace ADR 0011); change it only on his request.
+
+- **Sky** (`src/art/cosmos.ts`, mounted by `src/components/Cosmos.astro` in the art layer): stars and nebulae; the flower-of-life lattice with octagrams at some nodes; a vortex of living glyphs (runes, katakana, logic marks) flowing into the seal; the seal — seed of life inside the eight-pointed star of Alatyr, glyphs at its points and around it. Palette: night `#05060b`, gold `#d9ac5c`, a little violet.
+- **Type**: Cormorant Garamond (Fontsource, Cyrillic included), light headings; the page's body face is preloaded in `Base.astro`.
+- **Layout** on the axis: centred masthead (logo, tagline = site description, menu, languages). A page whose section the menu already names hides its `h1` visually (`.visually-hidden`), never removes it.
+- **Reading over the sky**: text sits on edgeless dark clouds that breathe (`breathe`: 100–130 % size, 0.8–1 opacity, 8 s) — one oval per feed card, one cloud per article (title included). Post and project bodies are wrapped in `.prose`.
+- **Motion**: headings sway, feed cards bob, the active menu item shimmers in gold; pages change by lifting into blur and rising out of it (`::view-transition-*(page)` in `src/styles/base.css`).
+
 ## Languages
 
 - ru has no prefix; en and zh live under `/en/…` and `/zh/…`. Every page exists in all three.

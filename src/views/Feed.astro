@@ -1,7 +1,7 @@
 ---
 import Base from '../layouts/Base.astro';
 import PostList from '../components/PostList.astro';
-import { localePath, t, type Locale } from '../i18n/ui';
+import { localePath, type Locale } from '../i18n/ui';
 import { tagLabel } from '../i18n/tags';
 import { getPosts, getUsedTags } from '../lib/content';
 
@@ -12,8 +12,8 @@ const tags = await getUsedTags(locale);
 ---
 
 <Base locale={locale} path="/">
-  <h1>nixxlab</h1>
-  <p class="muted">{t(locale, 'site.description')}</p>
+  {/* The logo in the header already shows the name; the heading stays for screen readers and search. */}
+  <h1 class="visually-hidden">nixxlab</h1>
   {tags.length > 0 && (
     <ul class="tags">
       {tags.map((tag) => <li><a href={localePath(locale, `/tags/${tag}/`)}>#{tagLabel(tag, locale)}</a></li>)}
