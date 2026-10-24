@@ -1,0 +1,142 @@
+---
+/**
+ * The Termide window of the post "The environment where I stopped writing code".
+ * Decorative (aria-hidden): the post's text tells the story itself.
+ * The panels light up in the order the story grows: terminals, then the file tree and git,
+ * then the editor, then the agent; the whole window then breathes and the cycle repeats.
+ * The resting style is fully lit, so under prefers-reduced-motion (base.css shortens every
+ * animation to a single instant run) the window stays lit and still.
+ */
+interface Props {
+  /** Panel labels in the page's language: [terminal, files, git, editor, agent]. */
+  labels: [string, string, string, string, string];
+}
+const { labels } = Astro.props;
+const [terminal, files, git, editor, agent] = labels;
+
+// Window 300×180 at (10, 10); panels laid out inside it.
+const tree = { x: 16, y: 30, w: 60, h: 118 };
+const code = { x: 82, y: 30, w: 150, h: 80 };
+const term1 = { x: 82, y: 116, w: 72, h: 32 };
+const term2 = { x: 160, y: 116, w: 72, h: 32 };
+const chat = { x: 238, y: 30, w: 66, h: 118 };
+const log = { x: 16, y: 154, w: 288, h: 30 };
+
+// File tree: [indent, width] per row.
+const treeRows: [number, number][] = [[0, 30], [6, 26], [12, 22], [12, 30], [6, 20], [0, 28], [6, 34], [6, 24], [0, 18]];
+// Code: [indent, width] per line.
+const codeRows: [number, number][] = [[0, 70], [8, 96], [16, 58], [16, 104], [8, 40], [0, 22], [0, 84], [8, 66]];
+// Dialogue: [side, width] per message; side 0 = me (right), 1 = agent (left).
+const chatRows: [number, number][] = [[0, 34], [1, 48], [1, 40], [0, 26], [1, 50], [1, 30], [0, 38]];
+// Commit graph: x positions along the main line, and a branch that leaves and returns.
+const commits = [26, 52, 78, 104, 140, 176, 212, 236, 258, 278, 296];
+---
+
+<figure class="termide-panels" aria-hidden="true">
+  <svg viewBox="0 0 320 200" role="presentation">
+    <defs>
+      <filter id="panels-glow" x="-20%" y="-20%" width="140%" height="140%">
+        <feGaussianBlur stdDeviation="2.2" result="b" />
+        <feMerge><feMergeNode in="b" /><feMergeNode in="SourceGraphic" /></feMerge>
+      </filter>
+    </defs>
+
+    <rect class="frame" x="10" y="10" width="300" height="180" rx="6" />
+    <rect class="comet" x="10" y="10" width="300" height="180" rx="6" pathLength="100" filter="url(#panels-glow)" />
+    <line class="bar" x1="10" y1="24" x2="310" y2="24" />
+
+    <g class="panel stage1">
+      <rect class="box" x={term1.x} y={term1.y} width={term1.w} height={term1.h} rx="2" />
+      <rect class="box" x={term2.x} y={term2.y} width={term2.w} height={term2.h} rx="2" />
+      <text x={term1.x + 5} y={term1.y + 10}>{terminal}</text>
+      <text class="prompt" x={term1.x + 5} y={term1.y + 24}>&gt;</text>
+      <rect class="cursor" x={term1.x + 13} y={term1.y + 18} width="4" height="7" />
+      <text class="prompt" x={term2.x + 5} y={term2.y + 24}>&gt;</text>
+      <line class="ink" x1={term2.x + 13} y1={term2.y + 21.5} x2={term2.x + 44} y2={term2.y + 21.5} />
+    </g>
+
+    <g class="panel stage2">
+      <rect class="box" x={tree.x} y={tree.y} width={tree.w} height={tree.h} rx="2" />
+      <text x={tree.x + 5} y={tree.y + 10}>{files}</text>
+      {treeRows.map(([indent, w], i) => (
+        <line class="ink" x1={tree.x + 6 + indent} y1={tree.y + 22 + i * 10} x2={tree.x + 6 + indent + Math.min(w, tree.w - 12 - indent)} y2={tree.y + 22 + i * 10} />
+      ))}
+
+      <rect class="box" x={log.x} y={log.y} width={log.w} height={log.h} rx="2" />
+      <text x={log.x + 5} y={log.y + 10}>{git}</text>
+      <line class="ink" x1={log.x + 10} y1={log.y + 21} x2={log.x + log.w - 6} y2={log.y + 21} />
+      <path class="ink branch" d={`M ${log.x + 120} ${log.y + 21} C ${log.x + 132} ${log.y + 13}, ${log.x + 150} ${log.y + 13}, ${log.x + 160} ${log.y + 13} L ${log.x + 180} ${log.y + 13} C ${log.x + 190} ${log.y + 13}, ${log.x + 204} ${log.y + 13}, ${log.x + 214} ${log.y + 21}`} />
+      {commits.map((x, i) => (
+        <circle class={`commit c${i % 3}`} cx={log.x + x - 16} cy={log.y + 21} r="2.1" />
+      ))}
+      <circle class="commit c1" cx={log.x + 170} cy={log.y + 13} r="2.1" />
+    </g>
+
+    <g class="panel stage3">
+      <rect class="box" x={code.x} y={code.y} width={code.w} height={code.h} rx="2" />
+      <text x={code.x + 5} y={code.y + 10}>{editor}</text>
+      {codeRows.map(([indent, w], i) => (
+        <line class="ink" x1={code.x + 8 + indent} y1={code.y + 20 + i * 7.5} x2={code.x + 8 + indent + w * 0.9} y2={code.y + 20 + i * 7.5} />
+      ))}
+    </g>
+
+    <g class="panel stage4">
+      <rect class="box" x={chat.x} y={chat.y} width={chat.w} height={chat.h} rx="2" />
+      <text x={chat.x + 5} y={chat.y + 10}>{agent}</text>
+      {chatRows.map(([side, w], i) => {
+        const y = chat.y + 22 + i * 13.5;
+        const x1 = side === 0 ? chat.x + chat.w - 6 - w : chat.x + 6;
+        return <line class={side === 0 ? 'ink me' : 'ink'} x1={x1} y1={y} x2={x1 + w} y2={y} />;
+      })}
+      <circle class="spark" cx={chat.x + chat.w / 2} cy={chat.y + chat.h - 8} r="2.4" filter="url(#panels-glow)" />
+    </g>
+  </svg>
+</figure>
+
+<style>
+  .termide-panels {
+    margin: 2.5rem auto;
+    width: min(100%, 34rem);
+    animation: float 16s ease-in-out infinite;
+  }
+  svg { display: block; width: 100%; height: auto; overflow: visible; }
+
+  .frame, .comet, .box, .branch { fill: none; }
+  .frame { stroke: rgba(217, 172, 92, 0.45); stroke-width: 0.9; }
+  .bar { stroke: rgba(217, 172, 92, 0.3); stroke-width: 0.7; }
+  .comet {
+    stroke: #fff2d2; stroke-width: 1.4; stroke-linecap: round;
+    stroke-dasharray: 6 94; animation: run 14s linear infinite;
+  }
+  .box { stroke: rgba(217, 172, 92, 0.6); stroke-width: 0.8; }
+  .ink { stroke: rgba(217, 172, 92, 0.45); stroke-width: 1.6; stroke-linecap: round; }
+  .ink.me { stroke: rgba(170, 150, 230, 0.55); }
+  .commit { fill: #f6dfa8; animation: pulse 6s ease-in-out infinite; }
+  .c1 { animation-delay: -2s; }
+  .c2 { animation-delay: -4s; }
+  .cursor { fill: #f6dfa8; animation: blink 1.2s steps(1) infinite; }
+  .spark { fill: #fff2d2; animation: pulse 3s ease-in-out infinite; }
+  .prompt { font-size: 9px; letter-spacing: 0; text-transform: none; }
+
+  text {
+    fill: #d9ac5c; font-size: 7px; letter-spacing: 0.18em; text-transform: uppercase;
+    font-family: 'Cormorant Garamond', 'Songti SC', 'Noto Serif CJK SC', serif;
+  }
+
+  /* One 20 s cycle: each stage lights up at its moment, all breathe together, then dim and repeat. */
+  .panel { animation-duration: 20s; animation-timing-function: ease-in-out; animation-iteration-count: infinite; }
+  .stage1 { animation-name: stage1; }
+  .stage2 { animation-name: stage2; }
+  .stage3 { animation-name: stage3; }
+  .stage4 { animation-name: stage4; }
+
+  @keyframes stage1 { 0%, 3% { opacity: 0.12; } 9%, 90% { opacity: 1; } 100% { opacity: 0.12; } }
+  @keyframes stage2 { 0%, 20% { opacity: 0.12; } 27%, 90% { opacity: 1; } 100% { opacity: 0.12; } }
+  @keyframes stage3 { 0%, 38% { opacity: 0.12; } 45%, 90% { opacity: 1; } 100% { opacity: 0.12; } }
+  @keyframes stage4 { 0%, 56% { opacity: 0.12; } 63%, 90% { opacity: 1; } 100% { opacity: 0.12; } }
+
+  @keyframes run { to { stroke-dashoffset: -100; } }
+  @keyframes blink { 0%, 49% { opacity: 1; } 50%, 100% { opacity: 0; } }
+  @keyframes pulse { 0%, 100% { opacity: 0.55; } 50% { opacity: 1; } }
+  @keyframes float { 0%, 100% { translate: 0 0; } 50% { translate: 0 -8px; } }
+</style>

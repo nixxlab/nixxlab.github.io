@@ -8,6 +8,7 @@ import type { Locale } from './ui';
 export const tags: Record<string, Record<Locale, string>> = {
   'programming-languages': { ru: 'языки программирования', en: 'programming languages', zh: '编程语言' },
   tools: { ru: 'инструменты', en: 'tools', zh: '工具' },
+  ai: { ru: 'ии', en: 'ai', zh: '人工智能' },
 };
 
 export type Tag = string;

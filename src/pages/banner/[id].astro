@@ -75,6 +75,7 @@ const shortUrl = `${url.host}${url.pathname}`.replace(/\/$/, '');
     margin: 0; animation: none; font-size: 100px; font-weight: 500; line-height: 1.05; text-wrap: balance;
     text-shadow: 0 0 40px rgba(255, 220, 160, 0.35);
   }
+  :lang(zh) .banner h1 { word-break: keep-all; }
   .banner .sub { margin: 20px 0 0; font-size: 60px; line-height: 1.1; font-style: italic; color: var(--fg); }
   .banner .foot {
     position: absolute; bottom: 20px; left: 0; right: 0; margin: 0;

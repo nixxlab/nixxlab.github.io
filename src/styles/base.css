@@ -90,6 +90,8 @@ h1 {
 main > article > header h1, .tag-title {
   font-size: clamp(2rem, 4.5vw, 3.2rem); line-height: 1.1; text-wrap: balance;
 }
+/* Chinese titles break only at punctuation, never inside a phrase (e.g. not between 环境 and 里). */
+:lang(zh) :is(main > article > header h1, .tag-title) { word-break: keep-all; }
 main > article > header h1, .tag-title {
   /* wider than the reading column, centred on the axis */
   margin-inline: calc((100% - min(100vw - 2rem, 54rem)) / 2);

@@ -1,0 +1,72 @@
+---
+sourceHash: ec2954250897
+title: The Environment Where I Stopped Writing Code
+subtitle: "How a home experiment grew into Termide"
+description: Why I built my own lightweight environment for working with agents, and how over eleven months it grew into Termide.
+date: 2026-10-24
+tags: [tools, ai]
+project: termide
+---
+
+import TermidePanels from '../../../components/art/TermidePanels.astro';
+
+
+It all started with memory. I have many languages behind me, Ruby, C and others, but by then I was already writing many of my projects in Rust. rust-analyzer needs a lot of memory, and the graphical IDE around it doesn't come free either. I worked in VS Code, Cursor and Zed, and on my machine each of them had its own limit: past a certain project size the machine started working noticeably worse, and that got in the way of the work itself.
+
+This coincided with a change of era. AI-assisted development was changing the way I worked faster than the tools were changing to fit it. I spent more and more time not in the editor but in agent windows in the terminal, and the heavy IDE around them turned into an expensive frame for something that already lived in the console.
+
+I decided to build a lightweight environment for myself, and right away I set a second goal: to test on a real, long project how AI behaves in iterative work, not on a hundred-line demo but over months, and to refine a pipeline on it.
+
+## A multiplexer with a file tree
+
+The first version was a terminal multiplexer with Claude Code running in its windows. But windows alone weren't enough. From the graphical IDE I wanted to keep two things without which the work doesn't come together: a file tree in front of my eyes, and git, where I can see what has changed and put commits together comfortably.
+
+For a while this remained a trial: there was neither a decision to continue nor a clear vision. When the decision came, the project reached its first commit, on November 20, 2025, already working: a terminal, a file manager, an editor with syntax highlighting, git status. Nine days later version 0.1.0 came out.
+
+By then my own shift to AI was already under way. Termide has been written by agents from the first line, iteratively, from specification to implementation. It became both a tool and a proving ground where I tested this way of working.
+
+<TermidePanels labels={["terminal", "files", "git", "editor", "agent"]} />
+
+## Everything around the editor
+
+From there the environment grew task by task. LSP arrived with autocompletion and go-to-definition, then working with files on servers over SFTP, FTP and SMB, and a database viewer. Long sessions stopped requiring tmux. An Android build let me work from a tablet.
+
+Along with this, the description of the project changed. At first it was "an IDE in the terminal." Then it became clear that there are enough editors without me, and that the value of Termide lies in what surrounds the editor: files on remote machines, git, databases, long-lived shells, agents. All of it in a single binary that works without configuration on a laptop, on a server and on a tablet.
+
+## When it was needed by more than just me
+
+I made Termide for myself, but cross-platform from the very start, with other people in mind. Yet I had nothing to test it on: I know my own machine, not other people's systems. Cross-platform support remained more of a promise.
+
+Then people showed up: stars, issues, pull requests. Contributors became real testers. On their systems they showed where the application works and where it only promises to, and helped bring it to a working state. There were fewer problems than there could have been, and I think choosing Rust played no small part in that.
+
+That attention gave me a motive you don't get when working alone: it means this is needed by more than just me.
+
+## My own harness
+
+For a long time the agents in Termide were someone else's: Claude Code, Codex and Gemini CLI ran in its windows. And with them the same feeling kept coming back: something under the hood had changed, the agent had started behaving differently, but what exactly was impossible to tell, and doing anything about it was practically impossible. For everyday work that is unpleasant. For research and experiments it is unacceptable: an experiment that can't be reproduced proves nothing.
+
+I needed reproducibility, clarity, transparency and control. A harness of my own, the environment in which an agent lives and works, is a big job, and I put it off for a long time. In the fall of 2026 I found the time and energy to extend the experiment, and I took it on.
+
+The harness is built on these requirements. The system prompt isn't hidden: I see it in full and can adjust it. MCP tools are switched on and off one at a time. There are no brittle, opaque hacks. The agent's memory relies on what the project already has: files, past sessions, git history.
+
+Control turned out to be useful in ordinary work too. Connections to providers are set up so that I can switch between them right inside a session. If my subscription limit runs out in the middle of a task, I switch to another provider and carry on from the same point. If the computer suddenly reboots, the start screen immediately shows the working parameters and the catalog of past sessions; I pick the one I need and continue.
+
+The harness has paid for itself: today, in my everyday work, it replaces Claude Code, Codex, Gemini CLI and the other agents I used before.
+
+## I no longer write code
+
+A year of moving from manual development to AI, followed by months of iterative agentic development from specifications, has brought me to the point where I don't write code at all. I work on projects in dialogue: I formulate the task, keep an eye on the artifacts and output, and test the user experience.
+
+What I think about has changed. A noticeable share of my attention used to go to formatting, to choosing one syntactic construct over another. Now it goes to the product itself: what it should do, how it feels in the hand, where it still promises more than it can do.
+
+Termide is both the means and the example here. The means, because this dialogue takes place in it. The example, because it was made the same way.
+
+## The experiment continues
+
+Eleven months, about 2,100 commits, versions from 0.1.0 to 0.45.0, 64 Rust crates. Linux, macOS, Windows and Android. 180 stars on GitHub, and contributors who send in their own code.
+
+But the experiment isn't over: my own harness has opened its next stage. Now I can change the conditions and see what comes of it.
+
+If you work in the terminal, try Termide and tell me what *you* find missing in it.
+
+This post was written in Termide too.
