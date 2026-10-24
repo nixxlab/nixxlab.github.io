@@ -56,6 +56,7 @@ Accepted by the author (artspace ADR 0012) as the template for every post; all o
 - `astro dev --background` starts the dev server in the background; `astro dev status|logs|stop`.
 - `pnpm build` runs the translation check, `astro check` and the build. It must pass before every push.
 - Deploy: push to `main`; see `.github/workflows/deploy.yml`.
+- `pnpm banner <slug> [--out <dir>] [--lang ru,en,zh]` renders the post's announcement banners, 1280×720 PNG per language (default `banners/<slug>/`, gitignored). It screenshots the dev-only page `/banner/<slug>.<lang>/` (`src/pages/banner/[id].astro`: cosmos, title, subtitle, project and short URL) with headless Chrome (`$CHROME` overrides the path), using a running dev server on :4321 or starting its own. The banner page is never built into production.
 
 ## Astro documentation
 

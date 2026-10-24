@@ -1,0 +1,79 @@
+---
+/**
+ * Announcement banner of a post: 1280×720, the site's sky and seal, the post's title over the seal.
+ * Address: /banner/<slug>.<lang>/ (a `ru` path segment would be eaten by i18n routing).
+ * Exists only in `pnpm dev` (no paths in a build); `scripts/banner.mjs` screenshots it into a PNG.
+ */
+import { getCollection } from 'astro:content';
+import Cosmos from '../../components/Cosmos.astro';
+import { htmlLang, localePath, type Locale } from '../../i18n/ui';
+import { parseId, projectTitle, type Post } from '../../lib/content';
+import { site } from '../../site';
+import '@fontsource/cormorant-garamond/300.css';
+import '@fontsource/cormorant-garamond/400-italic.css';
+import '../../styles/base.css';
+
+export async function getStaticPaths() {
+  if (!import.meta.env.DEV) return [];
+  const posts = await getCollection('posts');
+  return posts.map((post) => {
+    const [slug, lang] = parseId(post.id);
+    return { params: { id: `${slug}.${lang}` }, props: { post, locale: lang } };
+  });
+}
+
+interface Props { post: Post; locale: Locale }
+const { post, locale } = Astro.props;
+const [slug] = parseId(post.id);
+const { title, subtitle, project } = post.data;
+const projectName = project && (await projectTitle(project, locale));
+const url = new URL(localePath(locale, `/blog/${slug}/`), Astro.site);
+const shortUrl = `${url.host}${url.pathname}`.replace(/\/$/, '');
+---
+
+<!doctype html>
+<html lang={htmlLang[locale]}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="robots" content="noindex" />
+    <title>{title} — banner</title>
+  </head>
+  <body class="banner">
+    <div class="art" aria-hidden="true"><Cosmos /></div>
+    <p class="mark">{site.name}</p>
+    <div class="center">
+      <h1>{title}</h1>
+      {subtitle && <p class="sub">{subtitle}</p>}
+    </div>
+    <p class="foot">{projectName && <span>{projectName}</span>}<span>{shortUrl}</span></p>
+  </body>
+</html>
+
+<style is:global>
+  /* The page is the picture: exactly 1280×720, nothing scrolls, nothing moves but the sky. */
+  body.banner { width: 1280px; height: 720px; overflow: hidden; position: relative; display: block; }
+  /* The dev server injects its toolbar; it must not end up in the picture. */
+  astro-dev-toolbar { display: none !important; }
+  .banner .mark {
+    position: absolute; top: 34px; left: 0; right: 0; margin: 0; text-align: center;
+    font-size: 20px; letter-spacing: 0.6em; text-transform: uppercase; color: var(--fg);
+  }
+  /* Centred on the seal, which the sky draws at 40 % of the height. */
+  .banner .center {
+    position: absolute; left: 50%; top: 40%; translate: -50% -50%; width: 1060px; text-align: center;
+  }
+  .banner .center::before {
+    content: ''; position: absolute; inset: -60px -80px; z-index: -1;
+    background: radial-gradient(ellipse at center, rgba(5, 6, 11, 0.82) 30%, rgba(5, 6, 11, 0.5) 55%, transparent 72%);
+  }
+  .banner h1 {
+    margin: 0; animation: none; font-size: 72px; font-weight: 300; line-height: 1.08; text-wrap: balance;
+    text-shadow: 0 0 40px rgba(255, 220, 160, 0.35);
+  }
+  .banner .sub { margin: 22px 0 0; font-size: 32px; font-style: italic; color: var(--fg); opacity: 0.85; }
+  .banner .foot {
+    position: absolute; bottom: 34px; left: 0; right: 0; margin: 0;
+    display: flex; justify-content: center; gap: 1.2em; font-size: 22px; letter-spacing: 0.08em; color: var(--accent);
+  }
+  .banner .foot span + span::before { content: '·'; margin-right: 1.2em; color: var(--muted); }
+</style>
